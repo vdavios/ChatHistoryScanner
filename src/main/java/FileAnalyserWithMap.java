@@ -81,8 +81,6 @@ public class FileAnalyserWithMap {
     }
 
     public int bannedWordsUsedInChat() {
-
-        System.out.println(fullChat.size());
         return bannedWordsUsed(fullChat);
 
     }
@@ -95,32 +93,23 @@ public class FileAnalyserWithMap {
 
    private int bannedWordsUsed(ArrayList<String> input) {
 
-       return input.stream().map(line -> {
-            int counter=0;
-            for(Pattern pattern: bannedWordsPatterns) {
-               Matcher matcher = pattern.matcher(line.toLowerCase());
-               while(matcher.find()){
-                   counter++;
-               }
-            }
-            return counter;
-        }).reduce(0, Integer::sum);
+       return input.stream()
+               .map(this::bannedWordsCount)
+               .reduce(0, Integer::sum);
    }
-
-   private int bannedWordsUsedMethodThatWorks(ArrayList<String> input) {
-        return input.stream()
-                .filter(line -> {
-                    for(String word: bannedWords) {
-                        if(line.toLowerCase().contains(word)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }).toList().size();
-   }
-
 
    public void results(HashMap<String, Integer> input) {
 
    }
+
+    private Integer bannedWordsCount(String line) {
+        return bannedWordsPatterns.stream().mapToInt(pattern -> {
+            Matcher matcher = pattern.matcher(line);
+            int count =0;
+            while(matcher.find()){
+                count++;
+            }
+            return count;
+                }).sum();
+    }
 }
